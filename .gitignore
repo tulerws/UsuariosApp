@@ -1,0 +1,42 @@
+# Arquivos temporários
+*~
+*.swp
+
+# Arquivos de compilação
+bin/
+obj/
+
+# Arquivos de configuração
+*.dll.config
+*.exe.config
+
+# Pacotes NuGet
+packages/
+
+# Arquivos de log
+*.log
+
+# Arquivos de usuário do Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Ferramentas de compilação
+_ReSharper*/
+*.resharper
+*.resharper.user
+
+# Cache e arquivos temporários de compilação
+*.cache
+*.log
+*.vspscc
+*.backup
+*.pidb
+*.userprefs
+*.vspx
+
+# Outros arquivos gerados
+*.Publish.xml
+*.azurePubxml

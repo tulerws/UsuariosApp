@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -36,6 +37,17 @@ namespace UsuariosApp.Infra.Data.Repositories
             {
                 return dataContext.Set<Usuario>()
                     .Where(u => u.Email.Equals(email) && u.Senha.Equals(senha))
+                    .FirstOrDefault();
+            }
+        }
+
+        public Usuario? GetById(Guid id)
+        {
+            using (var dataContext = new DataContext())
+            {
+                return dataContext.Set<Usuario>()
+                    .Include(u => u.Perfil) //JOIN
+                    .Where(u => u.Id == id)
                     .FirstOrDefault();
             }
         }

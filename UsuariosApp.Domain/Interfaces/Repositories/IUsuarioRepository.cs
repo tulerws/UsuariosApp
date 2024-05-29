@@ -17,5 +17,7 @@ namespace UsuariosApp.Domain.Interfaces.Repositories
         Usuario? GetByEmail(string email);
 
         Usuario? GetByEmailAndSenha(string email, string senha);
+
+        Usuario? GetById(Guid id);
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UsuariosApp.API.DTOs;
 using UsuariosApp.API.Security;
@@ -94,5 +95,45 @@ namespace UsuariosApp.API.Controllers
                 return StatusCode(500, new { e.Message });
             }
         }
+
+        [Authorize]
+        [HttpGet]
+        [Route("obter-dados")]
+        [ProducesResponseType(typeof(ObterDadosUsuarioResponseDTO), 200)]
+        public IActionResult Get()
+        {
+            try
+            {
+                //ler o id do usuário que está gravado no TOKEN
+                var id = Guid.Parse(User.Identity.Name);
+
+                //consultar os dados do usuário através do ID
+                var usuario = _usuarioDomainService.ObterDados(id);
+
+                //copiar os dados que serão retornados
+                var response = new ObterDadosUsuarioResponseDTO
+                {
+                    Id = usuario.Id,
+                    NomeUsuario = usuario.Nome,
+                    Email = usuario.Email,
+                    PerfilId = usuario.Perfil.Id,
+                    NomePerfil = usuario.Perfil.Nome,
+                    DataHoraCadastro = usuario.DataHoraCadastro
+                };
+
+                return StatusCode(200, response);
+            }
+            catch (ApplicationException e)
+            {
+                //HTTP 422 (UNPROCESSABLE ENTITY)
+                return StatusCode(422, new { e.Message });
+            }
+            catch (Exception e)
+            {
+                //HTTP 500 (INTERNAL SERVER ERROR)
+                return StatusCode(500, new { e.Message });
+            }
+        }
+
     }
 }

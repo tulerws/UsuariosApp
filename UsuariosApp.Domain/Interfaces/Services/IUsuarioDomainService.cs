@@ -21,5 +21,10 @@ namespace UsuariosApp.Domain.Interfaces.Services
         /// Método para realizar a autenticação da conta do usuário
         /// </summary>
         Usuario? Autenticar(string email, string senha);
+
+        /// <summary>
+        /// Método para consultar os dados de 1 usuário baseado no ID
+        /// </summary>
+        Usuario? ObterDados(Guid id);
     }
 }

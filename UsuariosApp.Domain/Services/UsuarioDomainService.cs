@@ -1,12 +1,15 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UsuariosApp.Domain.Entities;
 using UsuariosApp.Domain.Helpers;
+using UsuariosApp.Domain.Interfaces.Messages;
 using UsuariosApp.Domain.Interfaces.Repositories;
 using UsuariosApp.Domain.Interfaces.Services;
+using UsuariosApp.Domain.Models;
 
 namespace UsuariosApp.Domain.Services
 {
@@ -15,11 +18,13 @@ namespace UsuariosApp.Domain.Services
         //atributos
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly IPerfilRepository _perfilRepository;
+        private readonly IMessageProducer _messageProducer;
 
-        public UsuarioDomainService(IUsuarioRepository usuarioRepository, IPerfilRepository perfilRepository)
+        public UsuarioDomainService(IUsuarioRepository usuarioRepository, IPerfilRepository perfilRepository, IMessageProducer messageProducer)
         {
             _usuarioRepository = usuarioRepository;
             _perfilRepository = perfilRepository;
+            _messageProducer = messageProducer;
         }
 
         public void CriarConta(Usuario usuario)
@@ -51,6 +56,19 @@ namespace UsuariosApp.Domain.Services
             _usuarioRepository.Add(usuario);
 
             #endregion
+
+            #region Enviar mensagem de boas vindas para o usuário
+
+            var mensagem = new Mensagem
+            {
+                Destinatario = usuario.Email,
+                Assunto = "Conta de usuário criada com sucesso!",
+                Texto = $"Olá {usuario.Nome},\nParabéns, sua conta foi criada no nosso sistema.\n\nAtt\nCOTI Informática"
+            };
+
+            _messageProducer.Send(JsonConvert.SerializeObject(mensagem));
+
+            #endregion
         }
 
         public Usuario? Autenticar(string email, string senha)
@@ -73,6 +91,24 @@ namespace UsuariosApp.Domain.Services
                 return usuario;
             else
                 throw new ApplicationException("Acesso negado. Usuário não encontrado.");
+
+            #endregion
+        }
+
+        public Usuario? ObterDados(Guid id)
+        {
+            #region Buscar o usuário no banco de dados através do ID
+
+            var usuario = _usuarioRepository.GetById(id);
+
+            #endregion
+
+            #region Verificar se o usuário foi encontrado
+
+            if (usuario != null)
+                return usuario;
+            else
+                throw new ApplicationException("Usuário não encontrado.");
 
             #endregion
         }
